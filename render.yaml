@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: izlelan-stream-proxy
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: TMDB_KEY
+        value: 8265bd1679663a7ea12ac168da84d2e8
+    autoDeploy: true
