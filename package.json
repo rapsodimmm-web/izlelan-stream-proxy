@@ -1,6 +1,6 @@
 {
   "name": "izlelan-stream-proxy",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "Stream proxy for izlelan IPTV - extracts real M3U8 from embed sources",
   "main": "server.js",
   "scripts": {
@@ -8,7 +8,6 @@
     "dev": "node --watch server.js"
   },
   "dependencies": {
-    "@consumet/extensions": "^1.8.8",
     "axios": "^1.6.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
