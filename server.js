@@ -284,11 +284,11 @@ app.get('/stream-info', async (req, res) => {
   catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// M3U Playlist — tüm içerikler
-app.get('/m3u/all', async (req, res) => {
-  const host = req.query.host || `${req.protocol}://${req.get('host')}`;
-  const type = req.query.type || 'all';
-  const page = parseInt(req.query.page) || 1;
+// M3U içerik üretici (ortak fonksiyon)
+async function buildM3U(host, type, page) {
+  // Railway arkasında https olduğunu garanti et
+  const safeHost = host.replace(/^http:/, 'https:');
+  const baseHost = safeHost;
 
   const lines = ['#EXTM3U x-tvg-url=""'];
   const seen  = new Set();
@@ -303,17 +303,14 @@ app.get('/m3u/all', async (req, res) => {
         const uid = `${ct}-${item.id}`;
         if (seen.has(uid)) continue;
         seen.add(uid);
-
-        // UTF-8 safe title
         const title    = (item.title || item.name || '').replace(/[,\r\n"]/g, ' ').trim();
         const year     = (item.release_date || item.first_air_date || '').slice(0, 4);
         const poster   = item.poster_path ? `${IMG_BASE}${item.poster_path}` : '';
         const overview = (item.overview || '').replace(/[\r\n",]/g, ' ').slice(0, 120).trim();
         const rating   = item.vote_average?.toFixed(1) || '';
-
         lines.push(
           `#EXTINF:-1 tvg-id="tmdb-${item.id}" tvg-name="${title}" tvg-logo="${poster}" tvg-year="${year}" tvg-rating="${rating}" tvg-plot="${overview}" group-title="${genreName}",${title}${year ? ` (${year})` : ''}`,
-          `${host}/stream?id=${item.id}&type=${ct}`
+          `${baseHost}/stream?id=${item.id}&type=${ct}`
         );
       }
     } catch (e) { console.error(`Genre ${genreId} err: ${e.message}`); }
@@ -324,23 +321,47 @@ app.get('/m3u/all', async (req, res) => {
   if (type !== 'movie') TV_GENRES.forEach(g    => tasks.push(fetchGenre(g.id, g.name, 'tv')));
   await Promise.all(tasks);
 
-  const m3uContent = lines.join('\n');
+  return lines.join('\n');
+}
 
-  res.setHeader('Content-Type', 'application/x-mpegurl; charset=utf-8');
-  res.setHeader('Content-Disposition', 'attachment; filename="izlelan.m3u"');
-  res.end(Buffer.from(m3uContent, 'utf8'));
+// M3U Playlist — tüm içerikler
+app.get('/m3u/all', async (req, res) => {
+  const host = req.query.host || `${req.protocol}://${req.get('host')}`;
+  const type = req.query.type || 'all';
+  const page = parseInt(req.query.page) || 1;
+  try {
+    const m3uContent = await buildM3U(host, type, page);
+    res.setHeader('Content-Type', 'application/x-mpegurl; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="izlelan.m3u"');
+    res.end(Buffer.from(m3uContent, 'utf8'));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // M3U sadece filmler
 app.get('/m3u/filmler', async (req, res) => {
-  req.query.type = 'movie';
-  res.redirect(`/m3u/all?type=movie`);
+  const host = `${req.protocol}://${req.get('host')}`;
+  try {
+    const m3uContent = await buildM3U(host, 'movie', 1);
+    res.setHeader('Content-Type', 'application/x-mpegurl; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="izlelan-filmler.m3u"');
+    res.end(Buffer.from(m3uContent, 'utf8'));
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // M3U sadece diziler
 app.get('/m3u/diziler', async (req, res) => {
-  res.redirect(`/m3u/all?type=tv`);
+  const host = `${req.protocol}://${req.get('host')}`;
+  try {
+    const m3uContent = await buildM3U(host, 'tv', 1);
+    res.setHeader('Content-Type', 'application/x-mpegurl; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="izlelan-diziler.m3u"');
+    res.end(Buffer.from(m3uContent, 'utf8'));
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
+
 
 // Cache temizle
 app.post('/cache/clear', (req, res) => {
