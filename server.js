@@ -365,17 +365,17 @@ app.get('/m3u/diziler', async (req, res) => {
 app.get('/m3u/canli-tv', (req, res) => {
   const m3uContent = `#EXTM3U x-tvg-url=""
 #EXTINF:-1 tvg-id="trt1" tvg-name="TRT 1 HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/TRT_1_logo.svg/512px-TRT_1_logo.svg.png" group-title="Ulusal Kanallar",TRT 1 HD
-https://tv-trt1.live.trt.com.tr/trt/link/trt1.m3u8
+https://tv-trt1.medya.trt.com.tr/master.m3u8
 #EXTINF:-1 tvg-id="trt-spor" tvg-name="TRT Spor HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/TRT_Spor_logo.svg/512px-TRT_Spor_logo.svg.png" group-title="Spor",TRT Spor HD
-https://tv-trtspor.medya.trt.net.tr/trt/link/trtspor.m3u8
+https://tv-trtspor1.medya.trt.com.tr/master.m3u8
 #EXTINF:-1 tvg-id="trt-haber" tvg-name="TRT Haber HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/TRT_Haber_logo.svg/512px-TRT_Haber_logo.svg.png" group-title="Haber",TRT Haber HD
-https://tv-trthaber.medya.trt.net.tr/trt/link/trthaber.m3u8
+https://tv-trthaber.medya.trt.com.tr/master.m3u8
 #EXTINF:-1 tvg-id="trt-belgesel" tvg-name="TRT Belgesel HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/TRT_Belgesel_logo.svg/512px-TRT_Belgesel_logo.svg.png" group-title="Belgesel",TRT Belgesel HD
-https://tv-trtbelgesel.medya.trt.net.tr/trt/link/trtbelgesel.m3u8
+https://tv-trtbelgesel.medya.trt.com.tr/master.m3u8
 #EXTINF:-1 tvg-id="trt-cocuk" tvg-name="TRT Çocuk HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/TRT_%C3%87ocuk_logo.svg/512px-TRT_%C3%87ocuk_logo.svg.png" group-title="Çocuk",TRT Çocuk HD
-https://tv-trtcocuk.medya.trt.net.tr/trt/link/trtcocuk.m3u8
+https://tv-trtcocuk.medya.trt.com.tr/master.m3u8
 #EXTINF:-1 tvg-id="trt-muzik" tvg-name="TRT Müzik HD" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/TRT_M%C3%BCzik_logo.svg/512px-TRT_M%C3%BCzik_logo.svg.png" group-title="Müzik",TRT Müzik HD
-https://tv-trtmuzik.medya.trt.net.tr/trt/link/trtmuzik.m3u8`;
+https://tv-trtmuzik.medya.trt.com.tr/master.m3u8`;
 
   res.setHeader('Content-Type', 'application/x-mpegurl; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="izlelan-canli-tv.m3u"');
